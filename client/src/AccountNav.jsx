@@ -1,54 +1,25 @@
-import { useContext,useState } from "react";
-import { UserContext } from "../UserContext";
-import {Link, Navigate,useParams} from "react-router-dom";
-import PlacesPage from "./PlacesPage";
+import { Link,useLocation } from "react-router-dom";
 
-
-export default function AccountPage(){
-    const [redirect, setRedirect] = useState(null);
-    const {ready,user,setUser}=useContext(UserContext);
-
-    let {subpage}= useParams();
-    if (subpage === undefined) {
-         subpage = 'profile';
-        }
-        async function Logout() {
-            await fetch('/logout', {
-              method: 'POST'
-            });
-            setRedirect('/');
-            setUser(null);
-        }
-          
-
-    if (!ready) {
-        return 'Loading... ';
+export default function AccountNav(){
+    const {pathname}=useLocation();
+    let subpage =pathname.split('/')?.[2];
+    if(subpage===undefined)
+    {
+        subpage='profile';
     }
+    function linkClasses (type=null) {
+        let classes= ' inline-flex gap-1 py-2 px-6 rounded-full';
+       
+          if  (type === subpage){
+              classes+= ' bg-primary text-white '
+          } else{
 
-        if(ready && !user && !redirect){
-            return <Navigate to={'/login'}/>
-        }
-
-        
-        function linkClasses (type=null) {
-          let classes= ' inline-flex gap-1 py-2 px-6 rounded-full';
-            if  (type === subpage){
-                classes+= ' bg-primary text-white '
-            } else{
-
-                classes += 'bg-gray-200';
-            }
-            return classes;
-            }
-
-            if (redirect) {
-                return <Navigate to={redirect} />
-                }
-    return(
-
-
-        <div>
-            <nav className="w-full flex justify-center mt-8 gap-2 mb-8 ">
+              classes += 'bg-gray-200';
+          }
+          return classes;
+          }
+return(
+    <nav className="w-full flex justify-center mt-8 gap-2 mb-8 ">
             <Link  className={linkClasses('profile') }  to={'/account'}>
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
             <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
@@ -66,18 +37,13 @@ export default function AccountPage(){
             </svg>
    
                  View and Edit product</Link>
-            </nav>
-             {subpage === 'profile' && (
-            <div className="text-center max-w-lg mx-auto">
-            Logged in as {user.name} ({user.email})<br />
-            <button onClick={Logout} className="primary max-w-sm mt-2"> Logout</button>
-            </div>
-            )}
+            <Link className={linkClasses('VOrders')}  to={'/account/VOrders'} >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M7.875 14.25l1.214 1.942a2.25 2.25 0 001.908 1.058h2.006c.776 0 1.497-.4 1.908-1.058l1.214-1.942M2.41 9h4.636a2.25 2.25 0 011.872 1.002l.164.246a2.25 2.25 0 001.872 1.002h2.092a2.25 2.25 0 001.872-1.002l.164-.246A2.25 2.25 0 0116.954 9h4.636M2.41 9a2.25 2.25 0 00-.16.832V12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 12V9.832c0-.287-.055-.57-.16-.832M2.41 9a2.25 2.25 0 01.382-.632l3.285-3.832a2.25 2.25 0 011.708-.786h8.43c.657 0 1.281.287 1.709.786l3.284 3.832c.163.19.291.404.382.632M4.5 20.25h15A2.25 2.25 0 0021.75 18v-2.625c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125V18a2.25 2.25 0 002.25 2.25z" />
+            </svg>
 
-            {subpage === 'VandE' && (
-                <PlacesPage />
-            )}
-        </div>
-    );
+                 View Orders</Link>
+            </nav>
+);
 
 }
