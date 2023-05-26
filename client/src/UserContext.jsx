@@ -23,10 +23,12 @@ useEffect(() => {
       .catch(error => console.error(error));
   }
 }, []);
+console.log(user);
     return(
         <UserContext.Provider value={{user,setUser,ready,setReady}}> 
              {children}
              </UserContext.Provider>
+             
        
     );
 }

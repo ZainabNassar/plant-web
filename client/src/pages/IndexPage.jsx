@@ -10,6 +10,7 @@ export default function IndexPage(){
             setPlaces(response.data);
         })
     }, []);
+    console.log(places);
     return(
         <div className=" mt-8 grid gap-x-6 gap-t-8 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
            {places.length > 0 && places.map(place => (
@@ -21,7 +22,7 @@ export default function IndexPage(){
                 </div>
                
                
-                <h2 className="leading-4 font-bold">{place.title}</h2>
+                <h2 className="leading-4 font-bold truncate">{place.title}</h2>
                 <h3 className="text-sm text-gray-500 "> {place.address}</h3>
                     <div className="mt-1">
                        <span className="font-bold"> ${place.price} </span> for one piece

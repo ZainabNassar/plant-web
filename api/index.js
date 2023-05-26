@@ -4,7 +4,8 @@ const mongoose=require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User= require('./models/User.js');
-const Place=require('./models/Place.js')
+const Place=require('./models/Place.js');
+const Booking=require('./models/Booking.js');
 const cookieParser= require('cookie-parser'); 
 const imageDownloader=require('image-downloader');
 const multer=require('multer');
@@ -28,6 +29,18 @@ app.use(cors({
     mongoose.connect('mongodb+srv://Saadeh:NAJDmGxHbRMRH94X@cluster0.gvbh6zu.mongodb.net/?retryWrites=true&w=majority');
     // process.env.MONGO_URL
     // console.log(process.env.MONGO_URL)
+    function getUserDataFromReq(req){
+        return new Promise((resolve, reject) => {
+            jwt.verify(req.cookies.token , jwtSecret, {} , async (err, userData) => {
+                if (err) throw err;
+                resolve(userData)
+
+        }); 
+        })
+
+
+    }
+
 app.get('/test',(req,res) => {
     res.json('test ok');
 });
@@ -48,25 +61,48 @@ app.post('/register', async (req,res) => {
 
 
 
+// app.post('/login', async (req, res) => {
+//     const {email, password} = req.body;
+//     const userDoc = await User.findOne({email});
+//     if (userDoc) {
+//      const passOk= bcrypt.compareSync(password,userDoc.password);
+    
+//         if(passOk){
+//             jwt.sign({email:userDoc.email, id:userDoc._id},jwtSecret, {},(err,token) => {
+//                 if (err) throw err;
+                
+//             res.cookie('token',token).json(userDoc);
+//             });  
+           
+//         }else{
+//             res.status(422).json('pass not ok');
+            
+//         }
+//     } else {
+//     res.json('not found');
+//     }});
+
+
 app.post('/login', async (req, res) => {
-    const {email, password} = req.body;
-    const userDoc = await User.findOne({email});
+    const { email, password } = req.body;
+    const userDoc = await User.findOne({ email });
+    
     if (userDoc) {
-     const passOk= bcrypt.compareSync(password,userDoc.password);
-        if(passOk){
-            jwt.sign({email:userDoc.email, id:userDoc._id},jwtSecret, {},(err,token) => {
+        const passOk = bcrypt.compareSync(password, userDoc.password);
+        
+        if (passOk) {
+            jwt.sign({ email: userDoc.email, id: userDoc._id }, jwtSecret, {}, (err, token) => {
                 if (err) throw err;
                 
-            res.cookie('token',token).json(userDoc);
-            });  
-           
-        }else{
-            res.status(422).json('pass not ok');
-            
+                res.cookie('token', token).json(userDoc);
+            });
+        } else {
+            res.status(422).json('Invalid password');
         }
     } else {
-    res.json('not found');
-    }});
+        res.status(404).json('Email not found');
+    }
+});
 
     app.get('/profile', (req, res) => {
         
@@ -171,5 +207,29 @@ app.post('/login', async (req, res) => {
                 res.json(await Place.find());
             });
 
+
+
+            app.post('/bookings',  async (req,res) => {
+                const userData =await getUserDataFromReq(req);
+                const {
+                    place,name,quantity,
+                    phone,price,address}=req.body;
+                    Booking.create({
+                        place,name,quantity,phone,price,address,
+                        user:userData.id,
+                    }).then((doc) => {
+                        res.json(doc);
+                    }).catch((err) => {
+                        throw err;
+                    });
+                    });
+
+                
+                    app.get('/bookings', async (req,res) => {
+                            const userData=await getUserDataFromReq(req);
+                            res.json( await Booking.find({user:userData.id}).populate('place'))
+
+
+                    })
    
     app.listen(4000);

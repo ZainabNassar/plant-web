@@ -20,6 +20,8 @@ export default function LoginPage(){
             credentials: 'include'
           });
           const userInfo = await response.json();
+          const userEmail = userInfo.email;
+  localStorage.setItem('userEmail', userEmail);
           setUser(userInfo);
           alert('Login successful');
           setRedirect(true);
