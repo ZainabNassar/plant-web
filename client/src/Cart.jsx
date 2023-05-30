@@ -1,15 +1,33 @@
+import axios from "axios";
 import { useState ,useEffect } from "react";
-export default function Cart(){
+import { Navigate } from "react-router-dom";
+import { UserContext } from "./UserContext";
+import { useContext } from "react";
+export default function Cart({place}){
 
-    const [cartItems, setCartItems] = useState([]);
-    const [userInfo, setUserInfo] = useState(localStorage.getItem('placesInfo'));
+    const[redirect,setRedirect]=useState('')
+    const {ready,user,setUser}=useContext(UserContext);
 
   
+   async function addToCart(){
+      if(user===null){
+        setRedirect('/login')
 
-  console.log("data",userInfo);
-  
+      }else{
+        const response= await axios.post('/cart' , {place:place._id});
+        // const cartId=response.data._id;
+        setRedirect('/account/cart')
+      }
+      
+    }
+
+  if (redirect){
+    return < Navigate to={redirect}/>
+  }
     return(
-        <div></div>
+        <div className="">
+          <button onClick={addToCart}   className="primary">Cart</button>
+        </div>
     );
     
     }

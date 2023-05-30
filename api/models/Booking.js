@@ -8,6 +8,7 @@ const bookingSchema = new mongoose.Schema({
     phone:{type:String, required:true},
     address:{type:String, required:true},
     price:Number,
+   
 
 })
 

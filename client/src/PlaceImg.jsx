@@ -7,7 +7,7 @@ if (!place.photos?.length){
  }
     return(
        
-            <img  className={className} src={'http://localhost:4000/uploads/'+place.photos[index] }alt=""/>
+            <img  className={className} src={'http://localhost:4000/uploads/'+place.photos[index] }alt="" style={{width:"200px",height:"100%"}}/>
 
       
     );

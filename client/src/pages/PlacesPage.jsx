@@ -28,7 +28,7 @@ export default function PlacesPage() {
                     
                     {places.length > 0 && places.map(place => (
                         <Link to={'/account/VandE/'+ place._id } className=" flex mb-1 cursor-pointer gap-4 bg-gray-100 p-4 rounded-2xl">
-                            <div className="flex w-32 h-32 bg-gray-300  shrink-0 ">
+                            <div className="flex w-32 h-32 bg-gray-300  shrink-0  h-48">
                                <PlaceImg place={place}/>
                             </div>
                             <div className="grow-0 shrink">

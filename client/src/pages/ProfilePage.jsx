@@ -3,6 +3,7 @@ import { UserContext } from "../UserContext";
 import {Link, Navigate,useParams} from "react-router-dom";
 import PlacesPage from "./PlacesPage";
 import AccountNav from "../AccountNav";
+import axios from "axios";
 
 
 export default function ProfilePage(){
@@ -14,13 +15,22 @@ export default function ProfilePage(){
     if (subpage === undefined) {
          subpage = 'profile';
         }
-        async function Logout() {
-            await fetch('http://127.0.0.1:4000/logout', {
-              method: 'POST'
-            });
-            setRedirect('/');
+        // async function Logout() {
+        //     await fetch('http://127.0.0.1:4000/logout', {
+        //       method: 'POST'
+        //     });
+        //     setRedirect('/');
+        //     setUser(null);
+        // }
+        const handleLogout = async () => {
+            try {
+              await axios.post('/logout');
+              setRedirect('/');
             setUser(null);
-        }
+            } catch (error) {
+              console.error('Error logging out:', error);
+            }
+          };
           
 
     if (!ready) {
@@ -43,7 +53,7 @@ export default function ProfilePage(){
              {subpage === 'profile' && (
             <div className="text-center max-w-lg mx-auto">
             Logged in as {user.name} ({user.email})<br />
-            <button onClick={Logout} className="primary max-w-sm mt-2"> Logout</button>
+            <button onClick={handleLogout} className="primary max-w-sm mt-2"> Logout</button>
             </div>
             )}
 

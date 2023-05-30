@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import {Link, Navigate} from "react-router-dom";
 import { UserContext } from "./UserContext";
+import Cart from "./Cart";
 
 export default function BookingW({place}){
     
@@ -11,6 +12,7 @@ export default function BookingW({place}){
     const[q,setQ]=useState(1);
     const[redirect,setRedirect]=useState('');
      const {user}=useContext(UserContext);
+     
      useEffect (() => {
           if(user){
                setName(user.name);
@@ -18,6 +20,10 @@ export default function BookingW({place}){
      },[user])
    
        async function book(){
+
+          if(user===null){
+               setRedirect('/login')
+          }
             const response= await axios.post('/bookings', {name,phone,
                 address,q,
                 place:place._id,
@@ -27,15 +33,11 @@ export default function BookingW({place}){
             setRedirect(`/account/bookings/${bookingId}`);
 
         }
-    //    function AddToCart(){
-    //     axios.get('/user-VandE').then(({data}) => {
-    //         setPlaces(data);
-    //         localStorage.setItem('placesInfo', places);
-    //     });
-       
+   
     if (redirect){
         return <Navigate to={redirect}/>
     }
+    console.log(user);
     return(
         <div className="bg-white shadow p-4 rounded-2xl">
         <div className="text-2xl text-center">
@@ -64,10 +66,11 @@ export default function BookingW({place}){
         </div>
         </div>
        
-        <div className="">
+        <div className="flex gap-1">
       
          <button onClick={book} className= "primary ">Buy</button>
-         </div>
+        
+         <Cart place={place}/> </div>
  </div>
     );
     }

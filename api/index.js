@@ -6,10 +6,14 @@ const jwt = require('jsonwebtoken');
 const User= require('./models/User.js');
 const Place=require('./models/Place.js');
 const Booking=require('./models/Booking.js');
+const Order=require('./models/Order.js');
+
+const Cart=require('./models/Cart.js');
 const cookieParser= require('cookie-parser'); 
 const imageDownloader=require('image-downloader');
 const multer=require('multer');
 const fs=require('fs');
+// const { default: Orders } = require('../client/src/pages/Orders.jsx');
 
 
 require('dotenv').config()
@@ -83,27 +87,56 @@ app.post('/register', async (req,res) => {
 //     }});
 
 
+// app.post('/login', async (req, res) => {
+//     const { email, password } = req.body;
+//     const userDoc = await User.findOne({ email });
+    
+//     if (userDoc) {
+//         const passOk = bcrypt.compareSync(password, userDoc.password);
+        
+//         if (passOk) {
+//             jwt.sign({ email: userDoc.email, id: userDoc._id }, jwtSecret, {}, (err, token) => {
+//                 if (err) throw err;
+                
+//                 res.cookie('token', token).json(userDoc);
+//             });
+//         } else {
+//             res.status(422).json('Invalid password');
+//         }
+//     } else {
+//         res.status(404).json('Email not found');
+//     }
+// });
+
 app.post('/login', async (req, res) => {
     const { email, password } = req.body;
-    const userDoc = await User.findOne({ email });
-    
-    if (userDoc) {
+  
+    try {
+      const userDoc = await User.findOne({ email });
+  
+      if (userDoc) {
         const passOk = bcrypt.compareSync(password, userDoc.password);
-        
+  
         if (passOk) {
-            jwt.sign({ email: userDoc.email, id: userDoc._id }, jwtSecret, {}, (err, token) => {
-                if (err) throw err;
-                
-                res.cookie('token', token).json(userDoc);
-            });
+          jwt.sign({ email: userDoc.email, id: userDoc._id }, jwtSecret, {}, (err, token) => {
+            if (err) {
+              console.error('Error signing JWT:', err);
+              res.sendStatus(500); // Internal Server Error
+            } else {
+              res.cookie('token', token).json(userDoc);
+            }
+          });
         } else {
-            res.status(422).json('Invalid password');
+          res.sendStatus(401); // Unauthorized
         }
-    } else {
-        res.status(404).json('Email not found');
+      } else {
+        res.sendStatus(401); // Unauthorized
+      }
+    } catch (err) {
+      console.error('Error during login:', err);
+      res.sendStatus(500); // Internal Server Error
     }
-});
-
+  });
     app.get('/profile', (req, res) => {
         
         const {token} = req.cookies;
@@ -119,8 +152,8 @@ app.post('/login', async (req, res) => {
         })
 
         app.post('/logout', (req, res) => {
-            res.cookie ('token', '').json (true);
-            });
+            res.clearCookie('token').json(true);
+          });
 
         
         app.post('/upload-by-link', async (req,res) => {
@@ -231,5 +264,95 @@ app.post('/login', async (req, res) => {
 
 
                     })
+                    app.get('/orders', async (req, res) => {
+                        try {
+                          const orders = await Booking.find().populate('place');
+                          res.json(orders);
+                        } catch (error) {
+                          res.status(500).json({ error: 'Failed to retrieve orders' });
+                        }
+                      });
+
+
+                  
+                    //   app.post('/done',  async (req,res) => {
+                    //     const userData =await getUserDataFromReq(req);
+                    //     const {
+                    //         booking,done}=req.body;
+                    //         Order.create({
+                    //             booking,done,
+                              
+                    //         }).then((doc) => {
+                    //             res.json(doc);
+                    //         }).catch((err) => {
+                    //             throw err;
+                    //         });
+                    //         });
+
+                    //         app.get('/getdone', async (req, res) => {
+                    //             try {
+                    //               const doneg = await Order.find().populate('booking');
+                    //               res.json(doneg);
+                    //             } catch (error) {
+                    //               res.status(500).json({ error: 'Failed to retrieve orders' });
+                    //             }
+                    //           });
+
+
+
+
+
+
+
+                     app.post('/cart',  async (req,res) => {
+                        const userData =await getUserDataFromReq(req);
+                        const {
+                            place}=req.body;
+                            Cart.create({
+                                place,
+                                user:userData.id,
+                            }).then((doc) => {
+                                res.json(doc);
+                            }).catch((err) => {
+                                throw err;
+                            });
+                            });
+                    
+
+                            app.get('/cart', async (req,res) => {
+                                const userData=await getUserDataFromReq(req);
+                                res.json( await Cart.find({user:userData.id}).populate('place'))})
    
+
+
+
+                                // app.delete('/cart/:itemId', (req, res) => {
+                                //     const itemId = req.params.itemId;
+                                  
+                                //     // Find and remove the item from the database
+                                //     Cart.findByIdAndDelete({ _id: itemId }, (error) => {
+                                //       if (error) {
+                                //         console.log('Error removing item from cart:', error);
+                                //         res.status(500).json({ error: 'Unable to remove item from cart' });
+                                //       } else {
+                                //         res.json({ message: 'Item removed from cart' });
+                                //       }
+                                //     });
+                                //   });
+
+                                app.delete('/cart/:id', async (req, res) => {
+                                    const id = req.params.id;
+                                  
+                                    try {
+                                      const deletedItem = await Cart.findByIdAndDelete(id);
+                                      if (deletedItem) {
+                                        res.sendStatus(204); // No Content
+                                      } else {
+                                        res.sendStatus(404); // Not Found
+                                      }
+                                    } catch (err) {
+                                      console.error('Error deleting item:', err);
+                                      res.sendStatus(500); // Internal Server Error
+                                    }
+                                  });
     app.listen(4000);
