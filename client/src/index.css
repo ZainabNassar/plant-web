@@ -19,3 +19,7 @@ button.primary{
     background-color: #00994C;
     @apply bg-primary p-2 w-full text-white rounded-2xl;
 }
+button.red{
+    background-color: red;
+    @apply bg-red-700 p-2 w-full text-white rounded-2xl;
+}

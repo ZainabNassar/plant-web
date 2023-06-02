@@ -4,7 +4,8 @@ import { useEffect,useState } from "react";
 import { Link } from "react-router-dom";
 import PlaceImg from "../PlaceImg";
 
-export default function AddCart({place}){
+export default function AddCart({}){
+ 
     const[cart,setCart]=useState([]);
     useEffect(() => {
         axios.get('/cart').then(response => {
@@ -30,8 +31,9 @@ export default function AddCart({place}){
 
 
     {cart?.length >0 && cart.map(cart => (
+        
 
-<Link  className=" mt-4 flex gap-4 bg-gray-200 rounded-2xl overflow-hidden ">
+<Link to={'/VandE/'+ cart.place._id } className=" mt-4 flex gap-4 bg-gray-200 rounded-2xl overflow-hidden ">
   <div className="w-48">
     <PlaceImg place={cart.place}/>
   </div>
@@ -40,9 +42,7 @@ export default function AddCart({place}){
   
   <div className="text-xl border-t border-gray-300 mt-2 py-2">
     <div className="flex gap-2 items-end">
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-<path strokeLinecap="round" strokeLinejoin="round" d="M6.429 9.75L2.25 12l4.179 2.25m0-4.5l5.571 3 5.571-3m-11.142 0L2.25 7.5 12 2.25l9.75 5.25-4.179 2.25m0 0L21.75 12l-4.179 2.25m0 0l4.179 2.25L12 21.75 2.25 16.5l4.179-2.25m11.142 0l-5.571 3-5.571-3" />
-</svg>
+    
 
     <br/>
     </div>
@@ -53,10 +53,11 @@ export default function AddCart({place}){
 
   Total Price$: {cart.place.price}
   </div>
-  <button onClick={() => remove(cart._id)}> Delete</button>
+  <button onClick={() => remove(cart._id)} className="primary my-3 "style={{width:"7%"}} > Delete</button>
   </div>
   </div>
 </Link>
+   
 ))}
     </div>
     

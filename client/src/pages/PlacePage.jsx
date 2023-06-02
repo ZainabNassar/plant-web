@@ -37,11 +37,11 @@ console.log(place);
             {place.description}
           </div>
           <div className="grid grid-cols-2">
-            <div>
+            {/* <div>
               Check-in:  <br />
               Check-out: <br /> 
               Max number: 
-            </div>
+            </div> */}
           </div>
             </div>
             

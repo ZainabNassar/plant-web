@@ -101,8 +101,8 @@ export default function PlacesFormPage(){
          onChange={ev=> setDescription(ev.target.value)}/>
         
         {preInput('Perks','Select all the perks you need')}
-           <Perks selected={perks}
-            onChange={ setPerks}/>
+           {/* <Perks selected={perks}
+            onChange={ setPerks}/> */}
             {preInput('Extra Information','hints about this plant .For example:You should put this plant under sun light')}
              <textarea value={extraInfo}
               onChange={ev=> setExtraInfo(ev.target.value)}/>
